@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  
+  <style>
+    #container{
+      background-color: skyblue;
+    }
+  </style>
+  <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
+</head>
+<body>
+  <div id="container">
+    <div id="chat">
+      <p id="retext">냐앙~</p>
+      <div id="app"></div>
+    </div>
+    <div id="cat_img">
+      <img src="cat_image" style="width: 100%;">
+    </div>
+    <label for="chat_text"></label>
+    <input type="text" name="chat_text" id="chat_text">
+    <button type="button" id="act">시키기</button>
+  </div>
+  <script>
+    let count = 0; // 조건문을 선택하는 길잡이
+    let container = document.getElementById('container');
+    let retext = document.getElementById('retext'); // 고양이 대답 글
+    let addQuestion; // 등록 질문
+    let addAnswer; // 등록 답변
+    let commend = [ // 질문과 답변에 배열
+      {
+        'question' : '안녕',
+        'answer' : '안녕 냥~',
+      },
+      {
+        'question' : '잘가',
+        'answer' : '잘가라 냥~',
+      },
+      {
+        'question' : '불꺼줘',
+        'answer' : function(){
+          retext.innerHTML = '불을 꺼줬다 냥'
+          retext.style.color = '#fff'
+          container.style.backgroundColor = '#000';
+        },
+      },
+      {
+        'question' : '불켜줘',
+        'answer' : function(){
+          retext.innerHTML = '불을 켜줬다 냥';
+          retext.color = '#000';
+          container.style.backgroundColor = '#fff';
+        },
+      },
+      {
+        'question' : '따',
+        'answer' : '안녕 냥~',
+      },
+      ]
+    function chat(){
+      let value = document.getElementById('chat_text'); // 입력하는 input태그
+
+      for(let i = 0; i < commend.length ; i ++){
+        if(value.value == commend[i].question){ // 배열을 순회하여 조건 찾기
+         if(typeof(commend[i].answer) == 'string'){ 
+           retext.innerHTML = commend[i].answer; // 답이 문자열이면 그대로 내용 변경
+           value.value = ""; // 작성 칸 초기화
+           return; // 해당되면 해당 값 반환 후 함수 종료
+         }else{
+           let fn = commend[i].answer;
+           fn();                                //  답이 함수면, 함수 실행
+           value.value = ""; // 작성 칸 초기화
+           return; // 해당되면 해당 값 반환 후 함수 종료
+         }        
+        }
+      }
+      retext.innerHTML = '모르겠어요 <br> 말을 가르쳐 주실래요? (네, 아니요)'; // 값을 찾지 못하면 실행되는 질문
+
+      
+      if(count === 1){
+        if(value.value === '네'){
+          retext.innerHTML = `(${addQuestion})에 해당되는 답을 작성해 주세요` // 전에 작성한 진문에 대한 답 요구
+          count = 2; // 다른 조건문으로 연결
+          value.value = ""; // 작성 칸 초기화
+          return;
+          
+        }else if(value.value === '아니요'){
+          retext.innerHTML = '아쉽다 냥~'
+          count =0; // 처음 상태
+          value.value = ""; // 작성 칸 초기화
+          return;
+        }else{
+          alert('대답을 하지 않으셨습니다.');
+        }
+      }
+
+      if(count === 2){
+        addAnswer = value.value;
+        retext.innerHTML = `${addQuestion}이라는 질문에<br>${addAnswer}의 답변이 등록 됐습니다.`
+        commend.push({question: addQuestion , answer: addAnswer + ` 냥 ~ `});
+        count = 0;
+        value.value = ""; // 작성 칸 초기화
+        return;
+      }
+      
+      count = 1;  // 다음 실행에는 조건문 1에 해당
+      addQuestion = value.value;  // 전에 작성한 질문 저장
+      value.value = "";  // 작성 칸 초기화
+    }
+
+    const act = document.getElementById('act');
+    act.addEventListener('click', chat);
+    
+  </script>
+</body>
+</html>
